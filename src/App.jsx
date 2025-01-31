@@ -29,15 +29,33 @@ export default function App() {
   ];
 
   function handleNewDices() {
-    setDices(handleNumsRandom());
+    setDices((prevDices) =>
+      prevDices.map((dice) =>
+        dice.isHeld
+          ? dice
+          : { ...dice, indexDice: Math.floor(Math.random() * 6) }
+      )
+    );
   }
 
   return (
     <main className="bg-gray-600">
-      <div className="flex flex-col justify-center items-center gap-5 py-10 min-h-svh container mx-auto">
+      <div className="flex flex-col justify-center items-center gap-5 px-5 py-10 min-h-svh container mx-auto text-white">
         <h1 className="text-3xl font-bold">Tenzies</h1>
 
-        <div className="grid grid-cols-5 gap-5 justify-center">
+        <h2 className="text-xl text-balance text-center">Escolha um dado e clique em todos que possuem o mesmo número</h2>
+
+        {dices.every((dice) => dice.isHeld) &&
+          dices.every((dice) => dice.indexDice === dices[0].indexDice) && (
+            <p className="font-semibold text-2xl text-balance text-center bg-green-500 text-black rounded-2xl px-5 py-2 shadow-2xl border-2 border-black my-5">Parabéns! Você ganhou</p>
+          )}
+
+        {dices.every((dice) => dice.isHeld) &&
+          !dices.every((dice) => dice.indexDice === dices[0].indexDice) && (
+            <p className="font-semibold text-2xl text-balance text-center bg-yellow-300 text-black rounded-2xl px-5 py-2 shadow-2xl border-2 border-black my-5">Tem alguns dados diferente dos outros!</p>
+          )}
+
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-5 justify-center">
           {dices.map((num) => (
             <button
               className={`dice cursor-pointer duration-150 hover:scale-105 hover:shadow-2xl ${
@@ -59,12 +77,16 @@ export default function App() {
           ))}
         </div>
 
-        <button
-          className="px-4 py-2 mt-3 rounded-2xl border-2 border-black text-xl font-bold text-white bg-black cursor-pointer hover:bg-transparent hover:text-black duration-300"
-          onClick={handleNewDices}
-        >
-          Girar os Dados
-        </button>
+        {dices.every((dice) => dice.isHeld) &&
+        dices.every((dice) => dice.indexDice === dices[0].indexDice) ? (
+          <button className="btn" onClick={() => setDices(handleNumsRandom())}>
+            Recomeçar
+          </button>
+        ) : (
+          <button className="btn" onClick={handleNewDices}>
+            Girar os Dados
+          </button>
+        )}
       </div>
     </main>
   );
